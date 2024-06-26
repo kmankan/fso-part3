@@ -1,2 +1,2 @@
 # fso-part3
-Fullstack Open Coursework Part 3
+Exercises and Projects from Fullstack Open Part 3
