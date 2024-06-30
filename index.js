@@ -27,9 +27,34 @@ let persons =
   }
 ]
 
+// Custom middleware to log request time
+app.use((request, response, next) => {
+  
+  const date = new Date();
+  request.requestTime = new Intl.DateTimeFormat('en-GB', {
+    dateStyle: 'full',
+    timeStyle: 'long',
+    timeZone: 'Australia/Sydney',
+  }).format(date)
+  next();
+});
+
 app.get('/api/persons', (request, response) => {
   response.json(persons)
 })
+
+app.get('/api/info', (request, response) => {
+  const responseInfo =
+  `
+  <p>Phonebook has info for ${persons.length} people</p>
+  </br>
+  <p>${request.requestTime}</p>
+  `;
+  
+  response.send(responseInfo);
+  })
+
+  
 
 const PORT = 3001
 app.listen(PORT, () => {
