@@ -75,9 +75,40 @@ app.delete('/api/persons/:id', (request, response) => {
     response.json({deleted: deletion});
     response.status(204).end()
   } else {
-    response.status(404).json({ error: 'persons not found' }); // Handle case where note is not found
+    response.status(404).json({ error: 'persons not found' }); // Handle case where person is not found
   }
 })
+
+const generateId = () => {
+  let newId;
+  if (persons.length > 0) {
+      newId = Math.floor(Math.random() * 10000)
+    } else newId = 0
+  
+  return String(newId)
+}
+
+app.post('/api/persons', (request, response) => {
+  const body = request.body
+  console.log(body)
+
+  if (!body.name) {
+    return response.status(400).json({ 
+      error: 'name missing' 
+    })
+  }
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: generateId()
+  }
+
+  persons = persons.concat(person)
+
+  response.json(persons)
+})
+
 
 const PORT = 3001;
 app.listen(PORT, () => {
