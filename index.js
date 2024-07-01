@@ -87,15 +87,26 @@ const generateId = () => {
   
   return String(newId)
 }
-console.log('object :>> ', persons);
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
-  console.log(body)
+  const personArray = persons.map(p => p.name);
 
   if (!body.name) {
     return response.status(400).json({ 
       error: 'name missing' 
+    })
+  }
+
+  if (!body.number) {
+    return response.status(400).json({
+      error: 'number missing'
+    })
+  }
+
+  if (personArray.includes(body.name)) {
+    return response.status(400).json({
+      error: 'name must be unique'
     })
   }
 
