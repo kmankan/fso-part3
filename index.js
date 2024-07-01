@@ -87,6 +87,7 @@ const generateId = () => {
   
   return String(newId)
 }
+console.log('object :>> ', persons);
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
