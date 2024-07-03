@@ -1,7 +1,23 @@
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
 
 app.use(express.json())
+// morgan middleware for logging incoming requests
+app.use(morgan('tiny'))
+
+
+// Custom middleware to log request time
+app.use((request, response, next) => {
+  
+  const date = new Date();
+  request.requestTime = new Intl.DateTimeFormat('en-GB', {
+    dateStyle: 'full',
+    timeStyle: 'long',
+    timeZone: 'Australia/Sydney',
+  }).format(date)
+  next();
+});
 
 let persons = 
 [
@@ -27,17 +43,7 @@ let persons =
   }
 ]
 
-// Custom middleware to log request time
-app.use((request, response, next) => {
-  
-  const date = new Date();
-  request.requestTime = new Intl.DateTimeFormat('en-GB', {
-    dateStyle: 'full',
-    timeStyle: 'long',
-    timeZone: 'Australia/Sydney',
-  }).format(date)
-  next();
-});
+
 
 app.get('/api/persons', (request, response) => {
   response.json(persons)
