@@ -4,8 +4,21 @@ const morgan = require('morgan')
 
 app.use(express.json())
 // morgan middleware for logging incoming requests
-app.use(morgan('tiny'))
 
+morgan.token('post', function (req, res) {
+  return JSON.stringify(req.body)
+})
+
+app.use(morgan('tiny', {
+// skip this use of morgan if the method is a POST request 
+// i.e. we use tiny for everything except POST methods
+skip: function (req, res) {return req.method === "POST"}
+}))
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post', {
+  // skip this use of morgan if the method is not a POST request
+  skip: function (req, res) {return req.method !== "POST"}
+}))
 
 // Custom middleware to log request time
 app.use((request, response, next) => {
@@ -42,8 +55,6 @@ let persons =
     "number": "39-23-6423122"
   }
 ]
-
-
 
 app.get('/api/persons', (request, response) => {
   response.json(persons)
@@ -118,7 +129,7 @@ app.post('/api/persons', (request, response) => {
 
   const person = {
     name: body.name,
-    number: body.number,
+    number: String(body.number),
     id: generateId()
   }
 
