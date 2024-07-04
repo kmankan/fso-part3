@@ -3,8 +3,10 @@ const app = express()
 const morgan = require('morgan')
 const cors = require('cors')
 
+// enable CORS
 app.use(cors())
-
+// show static content
+app.use(express.static('dist'))
 app.use(express.json())
 // morgan middleware for logging incoming requests
 
@@ -54,7 +56,7 @@ let persons =
   },
   { 
     "id": "4",
-    "name": "Mary Poppendieck", 
+    "name": "Yuri Poppendieck", 
     "number": "39-23-6423122"
   }
 ]
