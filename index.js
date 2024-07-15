@@ -27,7 +27,6 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :p
 
 // Custom middleware to log request time
 app.use((request, response, next) => {
-  
   const date = new Date();
   request.requestTime = new Intl.DateTimeFormat('en-GB', {
     dateStyle: 'full',
