@@ -66,6 +66,20 @@ app.get('/api/persons/:id', (request, response, next) => {
   .catch(error => next(error)) 
 })
 
+// GET INFO on contacts
+app.get('/api/info', async (request, response) => {
+  const count = await Person.countDocuments();
+  const allContacts = (await Person.find({})).map(person => `${person.name}<br>`).join('');
+  const responseInfo = 
+  `
+  <p>The Phonebook has information about ${count} people</p>
+  <p>${allContacts}</p>
+  <p>${request.requestTime}</p>
+  `;
+
+  response.send(responseInfo);
+})
+
 // DELETE REQUEST
 app.delete('/api/persons/:id', (request, response) => {
   const id = request.params.id;
