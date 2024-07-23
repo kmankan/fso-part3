@@ -21,7 +21,8 @@ const PersonForm = ({
           // check if newName is in the existing names array, if so create an alert and do not update state of persons
           const matchingContact = persons.find(person => person.name === newName);
           console.log(matchingContact);
-
+          // THIS CODE NO LONGER WORKS -- id is unique in MongoDB
+          // NEEDS TO BE REFACTORED
           contactServices
             .update(
               matchingContact.id, 

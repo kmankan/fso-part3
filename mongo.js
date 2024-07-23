@@ -1,23 +1,20 @@
 const mongoose = require('mongoose')
+require('dotenv').config()
 
 // if third argument for password is not given, terminate the program
-if (process.argv.length<3) {
-  console.log('password argument needed')
-  process.exit(1)
-} else if (process.argv.length == 4) {
-  console.log('invalid number of arguments -- must be either 3 or 5')
+if (process.argv.length == 3) {
+  console.log('invalid number of arguments -- must be either 2 or 4')
   process.exit(1)
 }
 
-// store provided password in variable
-const password = process.argv[2]
 // store contact name
-const name = process.argv[3]
+const name = process.argv[2]
 // store contact number
-const number = process.argv[4]
+const number = process.argv[3]
+
 
 // mongoDB url
-const url = `mongodb+srv://malink027:${password}@fullstackopen-phonebook.4aoeplg.mongodb.net/phonebook?retryWrites=true&w=majority&appName=FullStackOpen-Phonebook`
+const url = process.env.MONGODB_URL;
 
 mongoose.set('strictQuery',false)
 
@@ -35,7 +32,7 @@ const contact = new Person({
   number: number
 })
 
-if (process.argv.length == 5) {
+if (process.argv.length == 4) {
   contact.save()
   .then(result => {
     console.log(`new contact added to the phonebook: ${result.name} ${result.number}`)
@@ -47,7 +44,7 @@ if (process.argv.length == 5) {
       mongoose.connection.close()
     })
   })
-} else if (process.argv.length == 3) {
+} else if (process.argv.length == 2) {
     Person.find({}).then(result => {
       result.forEach(person => {
         console.log(`${person.name} ${person.number}`)

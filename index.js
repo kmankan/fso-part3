@@ -2,6 +2,9 @@ const express = require('express')
 const app = express()
 const morgan = require('morgan')
 const cors = require('cors')
+require('dotenv').config()
+
+const Person = require('./models/contacts.js')
 
 // enable CORS
 app.use(cors())
@@ -36,82 +39,71 @@ app.use((request, response, next) => {
   next();
 });
 
-let persons = 
-[
-  { 
-    "id": "1",
-    "name": "Arto Hellas", 
-    "number": "040-123456"
-  },
-  { 
-    "id": "2",
-    "name": "Ada Lovelace", 
-    "number": "39-44-5323523"
-  },
-  { 
-    "id": "3",
-    "name": "Dan Abramov", 
-    "number": "12-43-234345"
-  },
-  { 
-    "id": "4",
-    "name": "Yuri Poppendieck", 
-    "number": "39-23-6423122"
-  }
-]
-
+// GET ALL
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
-})
+  Person.find({})
+    .then(persons => {
+      response.json(persons);
+    })
+    .catch(error => {
+      console.error('Error fetching persons:', error);
+      response.status(500).json({ error: 'Internal Server Error' });
+    });
+});
 
-app.get('/api/info', (request, response) => {
-  const responseInfo =
-  `
-  <p>Phonebook has info for ${persons.length} people</p>
-  </br>
-  <p>${request.requestTime}</p>
-  `;
-  
-  response.send(responseInfo);
-  })
-
-app.get('/api/persons/:id', (request, response) => {
+// GET SPECIFIC
+app.get('/api/persons/:id', (request, response, next) => {
   const id = request.params.id;
-  const person = persons.find(p => p.id === id);
-  
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  Person.findById(id)
+  .then(person => {
+    if (person) {
+      response.json(person)
+    } else {
+      console.log('id does not exist')
+      response.status(404).end()
+    }
+  })
+  .catch(error => next(error)) 
 })
 
+// DELETE REQUEST
 app.delete('/api/persons/:id', (request, response) => {
   const id = request.params.id;
-  const deletion = persons.find(p => p.id === id)
-  const personsAfterDelete = persons.filter(p => p.id !== id);
-
-  if (personsAfterDelete.length < persons.length) {
-    persons = personsAfterDelete;
-    response.json({deleted: deletion});
+  Person.findByIdAndDelete(id)
+  .then(contactRemoved => {
+    if (contactRemoved) {
+    response.json({deleted: contactRemoved})
     response.status(204).end()
-  } else {
-    response.status(404).json({ error: 'persons not found' }); // Handle case where person is not found
-  }
+    } else {
+      response.json(`${id} not found. nothing deleted.`)
+    }
+  })
+  .catch(error => {
+    response.status(404).json({ error: error }); // Handle error
+  })
 })
 
-const generateId = () => {
-  let newId;
-  if (persons.length > 0) {
-      newId = Math.floor(Math.random() * 10000)
-    } else newId = 0
-  
-  return String(newId)
-}
+// PUT REQUEST
+app.put('/api/persons/:id', (request, response) => {
+  const id = request.params.id;
+  const body = request.body;
 
+  const updateContact = {
+    name: body.name,
+    number: body.number
+  }
+
+  Person.findByIdAndUpdate(id, updateContact, {new: true})
+    .then(updatedContact => {
+      response.json(updatedContact)
+    })
+    .catch(error => next(error))
+})
+
+// POST REQUEST
 app.post('/api/persons', (request, response) => {
   const body = request.body
-  const personArray = persons.map(p => p.name);
+  console.log(body)
 
   if (!body.name) {
     return response.status(400).json({ 
@@ -125,21 +117,15 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  if (personArray.includes(body.name)) {
-    return response.status(400).json({
-      error: 'name must be unique'
-    })
-  }
-
-  const person = {
+  // create new contact with defined db schema
+  const newContact = new Person({
     name: body.name,
-    number: String(body.number),
-    id: generateId()
-  }
-
-  persons = persons.concat(person)
-
-  response.json(persons)
+    number: String(body.number)
+  })
+  // add new contact to the db
+  newContact.save().then(person => {
+    response.json(person)
+  })
 })
 
 const unknownEndpoint = (request, response) => {
@@ -147,6 +133,19 @@ const unknownEndpoint = (request, response) => {
 }
 
 app.use(unknownEndpoint)
+
+// create custom error handler middleware
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name == 'CastError') {
+    return response.status(400).send({error: 'malformatted id'})
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
