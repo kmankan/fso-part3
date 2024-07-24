@@ -1,0 +1,19 @@
+### GET ALL
+GET http://localhost:3001/api/persons
+
+#### GET SPECIFIC
+
+GET http://localhost:3001/api/persons/6694afeeab1f528c159fe7a0
+
+#### CREATE NEW (POST)
+
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "James Dao",
+  "number": "0319284932"
+}
+
+#### DELETE EXISTING
+DELETE http://localhost:3001/api/persons/66961f814a0b01e0c169c4af
