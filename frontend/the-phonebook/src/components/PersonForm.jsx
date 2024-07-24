@@ -73,7 +73,7 @@ const PersonForm = ({
             })
             .catch(error => {
               console.log('error: ', error)
-              setNotification('An error occurred while trying to update the contact. Please try again.');
+              setNotification(error.response.data.error);
             })
       };
     };

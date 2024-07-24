@@ -98,7 +98,7 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 // PUT REQUEST
-app.put('/api/persons/:id', (request, response) => {
+app.put('/api/persons/:id', (request, response, next) => {
   const id = request.params.id;
   const body = request.body;
 
@@ -107,7 +107,7 @@ app.put('/api/persons/:id', (request, response) => {
     number: body.number
   }
 
-  Person.findByIdAndUpdate(id, updateContact, {new: true})
+  Person.findByIdAndUpdate(id, updateContact, {new: true, runValidators: true, context:'query'})
     .then(updatedContact => {
       response.json(updatedContact)
     })

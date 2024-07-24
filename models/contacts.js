@@ -31,15 +31,15 @@ db.on('reconnected', () => {
   console.log('Reconnected to MongoDB');
 });
 
-const personSchema = new mongoose.Schema({
+const personSchema = new mongoose.Schema({  
   name: {
     type: String,
-    minLength: [1, 'Name cannot be empty'],
+    minLength: [3, 'Name must be at least 3 characters'],
     required: [true, 'Name required']
   },
   number: {
   type: String,
-  minLength: [1, 'Number cannot be empty'],
+  minLength: [9, 'Phone number must be minimum of 8 digits'],
   required: [true, 'Number required']
   }
 })
