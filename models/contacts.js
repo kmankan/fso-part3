@@ -39,6 +39,13 @@ const personSchema = new mongoose.Schema({
   },
   number: {
   type: String,
+  validate: {
+    validator: function(numToCheck) {
+      // regular expression to check number format validity
+      return /\d{2,3}-\d+/.test(numToCheck);
+    },
+    message: 'Invalid number format. Required: (2 or 3 digits)-(n digits bringing the total to at least 8) '
+  },
   minLength: [9, 'Phone number must be minimum of 8 digits'],
   required: [true, 'Number required']
   }
