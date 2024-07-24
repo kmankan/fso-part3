@@ -32,8 +32,16 @@ db.on('reconnected', () => {
 });
 
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: [1, 'Name cannot be empty'],
+    required: [true, 'Name required']
+  },
+  number: {
+  type: String,
+  minLength: [1, 'Number cannot be empty'],
+  required: [true, 'Number required']
+  }
 })
 
 personSchema.set('toJSON', {

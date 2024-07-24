@@ -20,9 +20,9 @@ const PersonForm = ({
         if (window.confirm(`${newName} is aleady in the phonebook. Do you want to replace the old number with this new one?`)) {
           // check if newName is in the existing names array, if so create an alert and do not update state of persons
           const matchingContact = persons.find(person => person.name === newName);
+          // check the contact being changed
           console.log(matchingContact);
-          // THIS CODE NO LONGER WORKS -- id is unique in MongoDB
-          // NEEDS TO BE REFACTORED
+          // PUT request to update contact details
           contactServices
             .update(
               matchingContact.id, 
