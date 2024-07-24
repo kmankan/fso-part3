@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 require('dotenv').config()
 
 // if third argument for password is not given, terminate the program
-if (process.argv.length == 3) {
+if (process.argv.length === 3) {
   console.log('invalid number of arguments -- must be either 2 or 4')
   process.exit(1)
 }
@@ -14,7 +14,7 @@ const number = process.argv[3]
 
 
 // mongoDB url
-const url = process.env.MONGODB_URL;
+const url = process.env.MONGODB_URL
 
 mongoose.set('strictQuery',false)
 
@@ -32,22 +32,22 @@ const contact = new Person({
   number: number
 })
 
-if (process.argv.length == 4) {
+if (process.argv.length === 4) {
   contact.save()
-  .then(result => {
-    console.log(`new contact added to the phonebook: ${result.name} ${result.number}`)
-    console.log('the phonebook:')
-    Person.find({}).then(result => {
-      result.forEach(person => {
-        console.log(`${person.name} ${person.number}`)
+    .then(result => {
+      console.log(`new contact added to the phonebook: ${result.name} ${result.number}`)
+      console.log('the phonebook:')
+      Person.find({}).then(result => {
+        result.forEach(person => {
+          console.log(`${person.name} ${person.number}`)
+        })
+        mongoose.connection.close()
       })
-      mongoose.connection.close()
     })
-  })
-} else if (process.argv.length == 2) {
-    Person.find({}).then(result => {
-      result.forEach(person => {
-        console.log(`${person.name} ${person.number}`)
-      })
-      mongoose.connection.close()
-    })}
+} else if (process.argv.length === 2) {
+  Person.find({}).then(result => {
+    result.forEach(person => {
+      console.log(`${person.name} ${person.number}`)
+    })
+    mongoose.connection.close()
+  })}
